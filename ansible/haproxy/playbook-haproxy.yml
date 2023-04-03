@@ -1,0 +1,26 @@
+---
+
+- name: HAProxy
+  hosts: haproxy
+  become: yes 
+ 
+
+  tasks:
+
+  - name: Install HAProxy
+    yum: name=haproxy state=latest
+    
+  - name: Copy config files HAProxy
+    copy: src=./haproxy.cfg dest=/etc/haproxy/haproxy.cfg mode=644 
+    notify: Reload HAProxy
+
+  - name: Add rule firewall
+    shell: sudo firewall-cmd --permanent --add-service=http && sudo firewall-cmd --reload 
+    
+  - name: Start service HAProxy
+    service: name=haproxy state=started enabled=yes
+  
+  handlers:   
+  - name: Reload HAProxy
+    service: name=haproxy state=restarted  
+    

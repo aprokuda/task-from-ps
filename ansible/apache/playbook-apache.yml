@@ -1,0 +1,45 @@
+---
+- name: Deploy-Apache
+  hosts: apache-servers
+  become: yes
+#  ignore_errors: yes
+
+  tasks:
+
+#  - name: Gather facts
+#    setup:
+
+  - name: Install Apache Service
+    yum: name=httpd state=latest
+
+  - name: Copy script
+    copy: src=./script.sh dest=/opt/script.sh mode=0755
+
+  - name: Copy conf-file Apache
+    copy: src=./apache.conf dest=/opt/apache.conf mode=0755
+
+  - name: Run script configure Apache
+    shell: /opt/script.sh
+
+
+  - name: Start Apache Service
+    service: name=httpd state=started enabled=yes
+
+  - name: Copy HomePage to WebServer Apache-1
+    copy: src=./apache-1.html dest=/opt/html/index.html mode=0755
+    when: ansible_hostname == "apache-1-tr"
+    notify: Restart Apache
+
+  - name: Copy HomePage to WebServer Apache-2
+    copy: src=./apache-2.html dest=/opt/html/index.html mode=0755
+    when: ansible_hostname == "apache-2-tr"
+    notify: Restart Apache
+
+  - name: Copy HomePage to WebServer Apache-3
+    copy: src=./apache-3.html dest=/opt/html/index.html mode=0755
+    when: ansible_hostname == "apache-3-tr"
+    notify: Restart Apache
+
+  handlers:
+  - name: Restart Apache
+    service: name=httpd state=restarted
