@@ -1,0 +1,27 @@
+---
+# tasks file for haproxy-role
+- name: Install HAProxy
+  yum: 
+    name: haproxy 
+    state: latest
+
+- name: Start HAProxy
+  service:
+    name: haproxy
+    state: started
+    enabled: yes    
+
+- name: Copy config files HAProxy
+  template: 
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    mode: 644
+  notify: Restart HAProxy
+
+
+- name: Add rule firewall
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+  notify: Reload Firewall

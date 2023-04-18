@@ -1,0 +1,13 @@
+---
+# handlers file for haproxy-role
+
+- name: Restart HAProxy
+  service:
+    name: haproxy
+    state: restarted
+    enabled: yes
+
+- name: Reload Firewall
+  service:
+    name: firewalld
+    state: reloaded

@@ -1,0 +1,84 @@
+---
+# tasks file for httpd-role
+- name: Add rule firewall
+  firewalld:
+    port: 80/tcp
+    permanent: yes
+    state: enabled
+  notify: Reload Firewall
+
+- name: Install Apache Service
+  yum:
+    name: httpd
+    state: latest
+
+- name: Create directory Web-Site
+  file:
+    path: /opt/html
+    state: directory
+    mode: 0755
+  notify: Reload Apache
+
+- name: Create directory Web-Logs
+  file:
+    path: /opt/html/log
+    state: directory
+    mode: 0755
+    owner: apache
+    group: apache
+    recurse: yes
+  notify: Reload Apache
+
+- name: Create directory Apache config
+  file:
+    path: /etc/httpd/sites-available
+    state: directory
+    mode: 0755
+
+- name: Create directory Apache config
+  file:
+    path: /etc/httpd/sites-enabled
+    state: directory
+    mode: 0755
+  notify: Reload Apache
+
+- name: Configure Apache httpd.conf
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    line: IncludeOptional sites-enabled/*.conf
+  notify: Reload Apache
+
+- name: Copy conf-file Apache
+  copy:
+    src: apache.conf
+    dest: /etc/httpd/sites-available/apache.conf
+    mode: 0755
+  notify: Reload Apache
+
+- name: Enable Apache link
+  file:
+    src: /etc/httpd/sites-available/apache.conf
+    dest: /etc/httpd/sites-enabled/apache.conf
+    state: link
+  notify: Reload Apache
+
+- name: Copy index.html
+  template:
+    src: index.html.j2
+    dest: /opt/html/index.html
+  notify: Reload Apache
+
+- name: SELinux context for website
+  sefcontext:
+    target: /opt/html(/.*)?
+    setype: httpd_sys_content_t
+    state: present
+  notify: SELinux Apply
+
+- name: SELinux context for logs
+  sefcontext:
+    target: /opt/html/log(/.*)?
+    setype: httpd_log_t
+    state: present
+  notify: SELinux Apply
+  

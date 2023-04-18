@@ -1,0 +1,6 @@
+- name: Deploy-Apache
+  hosts: apache-servers
+  become: yes
+
+  roles:
+    - httpd-role

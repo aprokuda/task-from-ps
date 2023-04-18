@@ -1,0 +1,6 @@
+- name: Deploy-Apache
+  hosts: haproxy
+  become: yes
+
+  roles:
+    - haproxy-role

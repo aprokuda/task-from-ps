@@ -63,11 +63,13 @@ defaults
 
 frontend http_front
       bind *:80
-      default_backend http_back  
+      default_backend http_back
+
 
 backend http_back
      balance roundrobin
-     server apache-1-tr 10.33.133.70:80
-     server apache-2-tr 10.33.133.71:80
-     server apache-3-tr 10.33.133.72:80
+    
+    {% for hosts in groups['apache-servers'] %}
+     server web {{ hosts }}:80
+     {% endfor %}
 

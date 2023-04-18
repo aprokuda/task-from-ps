@@ -1,0 +1,14 @@
+---
+# handlers file for httpd-role
+- name: Reload Firewall
+  service:
+    name: firewalld
+    state: reloaded
+
+- name: SELinux Apply
+  shell: restorecon -R -v /opt/html && restorecon -R -v /opt/html/log
+
+- name: Reload Apache
+  service:
+    name: httpd
+    state: reloaded

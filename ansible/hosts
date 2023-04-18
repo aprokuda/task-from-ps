@@ -1,16 +1,11 @@
-[apache-servers:vars]
+[all:vars]
 ansible_user=root
-ansible_password=******
+ansible_ssh_private_key_file=~/.ssh/id_rsa
 
 [apache-servers]
 10.33.133.70
 10.33.133.71
 10.33.133.72
-
-
-[haproxy:vars]
-ansible_user=root
-ansible_password=******
 
 [haproxy]
 10.33.133.73
